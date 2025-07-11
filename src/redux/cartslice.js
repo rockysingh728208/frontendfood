@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
   cartItems: [],
@@ -12,35 +13,55 @@ const cartSlice = createSlice({
       const existingItem = state.cartItems.find(
         (item) => item.id === action.payload.id
       );
+
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.cartItems.push({ ...action.payload, quantity: 1 });
+        const newItem = {
+          ...action.payload,
+          cartItemKey: uuidv4(), // unique key for cart operations
+          quantity: 1,
+        };
+        state.cartItems.push(newItem);
       }
     },
+
     removeFromCart: (state, action) => {
       state.cartItems = state.cartItems.filter(
-        (item) => item.id !== action.payload
+        (item) => item.cartItemKey !== action.payload
       );
     },
+
     incrementQuantity: (state, action) => {
-      const item = state.cartItems.find((item) => item.id === action.payload);
+      const item = state.cartItems.find(
+        (item) => item.cartItemKey === action.payload
+      );
       if (item) {
         item.quantity += 1;
       }
     },
+
     decrementQuantity: (state, action) => {
-      const item = state.cartItems.find((item) => item.id === action.payload);
-      if (item && item.quantity > 1) {
-        item.quantity -= 1;
+      const itemIndex = state.cartItems.findIndex(
+        (item) => item.cartItemKey === action.payload
+      );
+
+      if (itemIndex !== -1) {
+        if (state.cartItems[itemIndex].quantity > 1) {
+          state.cartItems[itemIndex].quantity -= 1;
+        } else {
+          state.cartItems.splice(itemIndex, 1);
+        }
       }
     },
+
     clearCart: (state) => {
       state.cartItems = [];
     },
   },
 });
 
+// Export actions
 export const {
   addToCart,
   removeFromCart,
@@ -49,17 +70,21 @@ export const {
   clearCart,
 } = cartSlice.actions;
 
+// Selectors
 export const selectCartItems = (state) => state.cart.cartItems;
 
 export const getCartTotalItems = (state) =>
   state.cart.cartItems.reduce((total, item) => total + item.quantity, 0);
 
 export const getCartSubtotal = (state) =>
-  state.cart.cartItems.reduce((subtotal, item) => subtotal + item.price * item.quantity, 0);
+  state.cart.cartItems.reduce(
+    (subtotal, item) => subtotal + item.price * item.quantity,
+    0
+  );
 
 export const getCartDeliveryCharge = (state) => {
   const subtotal = getCartSubtotal(state);
-  return subtotal > 0 ? 30 : 0; 
+  return subtotal > 0 ? 30 : 0;
 };
 
 export const getCartTotalAmount = (state) => {
@@ -68,4 +93,5 @@ export const getCartTotalAmount = (state) => {
   return subtotal + delivery;
 };
 
+// Export reducer
 export default cartSlice.reducer;

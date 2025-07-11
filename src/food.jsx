@@ -55,7 +55,7 @@ const food_items = [
     image: image7,
     price: 8,
     description: "Soft roll filled with cheese and spices.",
-    category: "Rolls"
+    category: "Desserts"
   },
   {
     id: "7",
@@ -79,7 +79,7 @@ const food_items = [
     image: image10,
     price: 12,
     description: "Juicy veggie burger with special sauce.",
-    category: "Burger"
+    category: "Noodles"
   }
 ];
 

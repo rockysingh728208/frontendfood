@@ -15,8 +15,8 @@ const FoodDisplay = () => {
       <div className="flex flex-wrap gap-6 justify-center">
         {filteredItems.map((item) => (
           <FoodItem
-            key={item.id}
-            id={item.id}
+            key={item._id}
+            id={item._id}
             name={item.name}
             description={item.description}
             price={item.price}

@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
 import {
   selectCartItems,
   removeFromCart,
@@ -11,6 +10,7 @@ import {
   getCartDeliveryCharge,
   getCartTotalAmount,
 } from "../../redux/cartslice";
+import { StoreContext } from "../../context/StoreContext";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -19,58 +19,80 @@ const Cart = () => {
   const subtotal = useSelector(getCartSubtotal);
   const deliveryCharge = useSelector(getCartDeliveryCharge);
   const totalAmount = useSelector(getCartTotalAmount);
+  const { url } = useContext(StoreContext);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">Your Cart</h2>
+
       {cartItems.length === 0 ? (
         <p className="text-center text-lg md:text-xl">Your cart is empty.</p>
       ) : (
-        <div className="space-y-6">
-          {cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-col md:flex-row items-center md:items-start justify-between bg-white rounded-xl shadow p-4 gap-4"
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full md:w-32 h-32 object-cover rounded-md"
-              />
-              <div className="flex-1 w-full">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-800">{item.name}</h3>
-                <p className="text-gray-600 mt-1 text-base md:text-lg">₹{item.price}</p>
-                <div className="flex items-center mt-3 gap-2">
-                  <button
-                    onClick={() => dispatch(decrementQuantity(item.id))}
-                    className="px-2 py-1 bg-gray-200 rounded"
-                  >
-                    -
-                  </button>
-                  <span className="text-base md:text-lg">{item.quantity}</span>
-                  <button
-                    onClick={() => dispatch(incrementQuantity(item.id))}
-                    className="px-2 py-1 bg-gray-200 rounded"
-                  >
-                    +
-                  </button>
-                </div>
-                <button
-                  onClick={() => dispatch(removeFromCart(item.id))}
-                  className="mt-3 text-sm text-red-500 underline"
-                >
-                  Remove
-                </button>
-              </div>
-              <div className="text-lg md:text-xl font-bold text-gray-700">
-                ₹{item.price * item.quantity}
-              </div>
-            </div>
-          ))}
+        <>
+          {/* Cart Table */}
+          <div className="overflow-x-auto mb-8">
+            <table className="min-w-full bg-white rounded-xl shadow text-left">
+              <thead>
+                <tr className="border-b">
+                  <th className="p-3 font-semibold">Items</th>
+                  <th className="p-3 font-semibold">Title</th>
+                  <th className="p-3 font-semibold">Price</th>
+                  <th className="p-3 font-semibold">Quantity</th>
+                  <th className="p-3 font-semibold">Total</th>
+                  <th className="p-3 font-semibold">Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr key={item.cartItemKey} className="border-b hover:bg-gray-50">
+                    <td className="p-3">
+                      <img
+                        src={`${url}/images/${item.image}`}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded-md"
+                      />
+                    </td>
+                    <td className="p-3 font-medium">{item.name}</td>
+                    <td className="p-3 font-medium">₹{item.price}</td>
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => dispatch(decrementQuantity(item.cartItemKey))}
+                          className="px-2 py-1 bg-gray-200 rounded"
+                        >
+                          −
+                        </button>
+                        <span className="min-w-[20px] text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => dispatch(incrementQuantity(item.cartItemKey))}
+                          className="px-2 py-1 bg-gray-200 rounded"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-3 font-semibold">
+                      ₹{item.price * item.quantity}
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => dispatch(removeFromCart(item.cartItemKey))}
+                        className="text-red-500 text-xl font-bold"
+                      >
+                        ×
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Promo Code Section */}
-          <div className="bg-white rounded-xl shadow p-4 space-y-4">
-            <h2 className="text-lg md:text-xl font-semibold">If you have a promocode, enter here:</h2>
+          {/* Promo Code */}
+          <div className="bg-white rounded-xl shadow p-4 mb-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-2">
+              If you have a promocode, enter here:
+            </h2>
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <input
                 type="text"
@@ -83,7 +105,7 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* Cart Totals */}
+          {/* Totals */}
           <div className="bg-white rounded-xl shadow p-4 space-y-2 text-base md:text-lg">
             <div className="flex justify-between">
               <span>Subtotal</span>
@@ -104,7 +126,7 @@ const Cart = () => {
               Proceed to Checkout
             </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

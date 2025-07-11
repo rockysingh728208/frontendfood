@@ -5,8 +5,31 @@ import {
   getCartDeliveryCharge,
   getCartTotalAmount,
 } from "../../redux/cartslice"; // path adjust karo agar alag folder me ho
+import { useContext } from "react";
+import { StoreContext } from "../../context/StoreContext";
+import { useState } from "react";
 
 const PlaceOrder = () => {
+//   const {token,food_items,cartItems,url}=useContext(StoreContext);
+//   const[data,setdata]=useState({
+//     firstName:"",
+//     lastName:"",
+//     email:"",
+//     street:"",
+//     city:"",
+//     state:"",
+//     zipcode:"",
+//     country:"",
+//     phone:""
+//   })
+
+// const onChangeHandler=(event)=>{
+//   const name=event.target.name;
+//   const value=event.target.value;
+//   setdata(data=>({...data,[name]:value}))
+// }
+
+
   const subtotal = useSelector(getCartSubtotal);
   const deliveryFee = useSelector(getCartDeliveryCharge);
   const totalAmount = useSelector(getCartTotalAmount);
