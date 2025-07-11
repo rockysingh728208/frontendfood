@@ -30,7 +30,7 @@ const Navbar = ({ onSignInClick }) => {
           <Link to="/contactus" className="hover:text-yellow-500 transition">Contact Us</Link>
         </div>
 
-        {/* Right side icons and sign in */}
+        
         <div className="flex items-center gap-4">
           <CiSearch className="text-xl md:text-2xl text-black" />
           <Link to="/cart" className="relative">
